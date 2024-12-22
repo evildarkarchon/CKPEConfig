@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<UserControl x:Class="CKPEConfig.Controls.NumericUpDownControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CKPEConfig.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="24" d:DesignWidth="120">
+    <UserControl.Resources>
+        <Style x:Key="UpDownButtonStyle" TargetType="RepeatButton">
+            <Setter Property="Background" Value="#3F3F46"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#2D2D30"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox x:Name="PART_TextBox" 
+                 Grid.Column="0"
+                 Text="{Binding Value, RelativeSource={RelativeSource AncestorType={x:Type local:NumericUpDownControl}}, 
+                        UpdateSourceTrigger=PropertyChanged}"
+                 PreviewTextInput="TextBox_PreviewTextInput"
+                 TextAlignment="Right"
+                 Background="#333337"
+                 Foreground="#FFFFFF"
+                 BorderBrush="#3F3F46"
+                 Padding="5,2"/>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <RepeatButton x:Name="PART_UpButton"
+                         Grid.Row="0"
+                         Click="UpButton_Click"
+                         Style="{StaticResource UpDownButtonStyle}">
+                <Path Data="M 0,4 L 8,0 L 16,4"
+                      Stroke="#FFFFFF"
+                      StrokeThickness="1"
+                      Width="16" Height="4"/>
+            </RepeatButton>
+
+            <RepeatButton x:Name="PART_DownButton"
+                         Grid.Row="1"
+                         Click="DownButton_Click"
+                         Style="{StaticResource UpDownButtonStyle}">
+                <Path Data="M 0,0 L 8,4 L 16,0"
+                      Stroke="#FFFFFF"
+                      StrokeThickness="1"
+                      Width="16" Height="4"/>
+            </RepeatButton>
+        </Grid>
+    </Grid>
+</UserControl>
