@@ -7,6 +7,12 @@ using Microsoft.Win32;
 
 namespace CKPEConfig;
 
+public class CharsetItem
+{
+    public required string Name { get; init; }
+    public int Value { get; init; }
+}
+
 public partial class MainWindow
 {
     private List<ConfigSection> _sections = [];
@@ -332,6 +338,29 @@ public partial class MainWindow
         return container;
     }
 
+    private static readonly List<CharsetItem> Charsets =
+    [
+        new CharsetItem { Name = "ANSI_CHARSET", Value = 0 },
+        new CharsetItem { Name = "DEFAULT_CHARSET", Value = 1 },
+        new CharsetItem { Name = "SYMBOL_CHARSET", Value = 2 },
+        new CharsetItem { Name = "MAC_CHARSET", Value = 77 },
+        new CharsetItem { Name = "SHIFTJIS_CHARSET", Value = 128 },
+        new CharsetItem { Name = "HANGEUL_CHARSET", Value = 129 },
+        new CharsetItem { Name = "JOHAB_CHARSET", Value = 130 },
+        new CharsetItem { Name = "GB2312_CHARSET", Value = 134 },
+        new CharsetItem { Name = "CHINESEBIG5_CHARSET", Value = 136 },
+        new CharsetItem { Name = "GREEK_CHARSET", Value = 161 },
+        new CharsetItem { Name = "TURKISH_CHARSET", Value = 162 },
+        new CharsetItem { Name = "VIETNAMESE_CHARSET", Value = 163 },
+        new CharsetItem { Name = "HEBREW_CHARSET", Value = 177 },
+        new CharsetItem { Name = "ARABIC_CHARSET", Value = 178 },
+        new CharsetItem { Name = "BALTIC_CHARSET", Value = 186 },
+        new CharsetItem { Name = "RUSSIAN_CHARSET", Value = 204 },
+        new CharsetItem { Name = "THAI_CHARSET", Value = 222 },
+        new CharsetItem { Name = "EASTEUROPE_CHARSET", Value = 238 },
+        new CharsetItem { Name = "OEM_CHARSET", Value = 255 }
+    ];
+
     private Control CreateWidgetForValue(string value, string entryName, string sectionName)
     {
         if (sectionName == "Hotkeys" || entryName == "uTintMaskResolution" || sectionName == "Log")
@@ -342,25 +371,15 @@ public partial class MainWindow
         if (entryName == "nCharset")
         {
             var comboBox = new ComboBox();
-            comboBox.Items.Add(new ComboBoxItem { Content = "ANSI_CHARSET", Tag = 0 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "DEFAULT_CHARSET", Tag = 1 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "SYMBOL_CHARSET", Tag = 2 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "MAC_CHARSET", Tag = 77 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "SHIFTJIS_CHARSET", Tag = 128 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "HANGEUL_CHARSET", Tag = 129 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "JOHAB_CHARSET", Tag = 130 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "GB2312_CHARSET", Tag = 134 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "CHINESEBIG5_CHARSET", Tag = 136 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "GREEK_CHARSET", Tag = 161 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "TURKISH_CHARSET", Tag = 162 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "VIETNAMESE_CHARSET", Tag = 163 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "HEBREW_CHARSET", Tag = 177 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "ARABIC_CHARSET", Tag = 178 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "BALTIC_CHARSET", Tag = 186 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "RUSSIAN_CHARSET", Tag = 204 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "THAI_CHARSET", Tag = 222 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "EASTEUROPE_CHARSET", Tag = 238 });
-            comboBox.Items.Add(new ComboBoxItem { Content = "OEM_CHARSET", Tag = 255 });
+            foreach (var charset in Charsets)
+            {
+                var item = new ComboBoxItem
+                {
+                    Content = charset.Name,
+                    Tag = charset.Value
+                };
+                comboBox.Items.Add(item);
+            }
 
             if (int.TryParse(value, out var charsetValue))
             {
