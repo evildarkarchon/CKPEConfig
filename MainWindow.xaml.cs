@@ -1,6 +1,4 @@
 ﻿// MainWindow.xaml.cs
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,14 +7,14 @@ using Microsoft.Win32;
 
 namespace CKPEConfig;
 
-public partial class MainWindow : Window
+public partial class MainWindow
 {
-    private List<ConfigSection> sections = new();
-    private readonly Dictionary<(string SectionName, string EntryName), Control> widgets = new();
-    private string[] originalLines = Array.Empty<string>();
-    private string? currentFile;
-    private TabControl? tabControl;
-    private UIElement? brandingContent;
+    private List<ConfigSection> _sections = [];
+    private readonly Dictionary<(string SectionName, string EntryName), Control> _widgets = new();
+    private string[] _originalLines = [];
+    private string? _currentFile;
+    private TabControl? _tabControl;
+    private UIElement? _brandingContent;
 
     public MainWindow()
     {
@@ -68,24 +66,24 @@ public partial class MainWindow : Window
         brandingPanel.Children.Add(subheading);
         brandingPanel.Children.Add(version);
 
-        brandingContent = brandingPanel;
+        _brandingContent = brandingPanel;
     }
 
     private void ShowBrandingContent()
     {
         MainContent.Children.Clear();
-        if (brandingContent != null)
+        if (_brandingContent != null)
         {
-            MainContent.Children.Add(brandingContent);
+            MainContent.Children.Add(_brandingContent);
         }
     }
 
     private void ShowEditorContent()
     {
         MainContent.Children.Clear();
-        if (tabControl != null)
+        if (_tabControl != null)
         {
-            MainContent.Children.Add(tabControl);
+            MainContent.Children.Add(_tabControl);
         }
     }
 
@@ -97,26 +95,35 @@ public partial class MainWindow : Window
             Title = "Open INI file"
         };
 
-        if (dialog.ShowDialog() != true) return;
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
 
-        if (!VerifyFilename(dialog.FileName, "selected")) return;
+        if (!VerifyFilename(dialog.FileName, "selected"))
+        {
+            return;
+        }
 
-        (sections, originalLines) = ConfigParser.ParseIniWithComments(dialog.FileName);
-        currentFile = dialog.FileName;
-        RefreshUI();
+        (_sections, _originalLines) = ConfigParser.ParseIniWithComments(dialog.FileName);
+        _currentFile = dialog.FileName;
+        RefreshUi();
     }
 
-    private bool isSaving = false;  // Add this field at class level
+    private bool _isSaving;  // Add this field at class level
 
     private void SaveIni_Click(object sender, RoutedEventArgs e)
     {
-        if (isSaving) return;  // Prevent multiple simultaneous saves
+        if (_isSaving)
+        {
+            return;  // Prevent multiple simultaneous saves
+        }
 
         try
         {
-            isSaving = true;
+            _isSaving = true;
 
-            if (currentFile == null)
+            if (_currentFile == null)
             {
                 var dialog = new SaveFileDialog
                 {
@@ -124,21 +131,27 @@ public partial class MainWindow : Window
                     Filter = "INI files (CreationKitPlatformExtended.ini)|CreationKitPlatformExtended.ini"
                 };
 
-                if (dialog.ShowDialog() != true) return;
+                if (dialog.ShowDialog() != true)
+                {
+                    return;
+                }
 
-                if (!VerifyFilename(dialog.FileName, "save")) return;
+                if (!VerifyFilename(dialog.FileName, "save"))
+                {
+                    return;
+                }
 
-                currentFile = dialog.FileName;
+                _currentFile = dialog.FileName;
             }
 
-            var newLines = new List<string>(originalLines);
+            var newLines = new List<string>(_originalLines);
 
-            foreach (var section in sections)
+            foreach (var section in _sections)
             {
                 foreach (var entry in section.Entries)
                 {
-                    var widget = widgets[(section.Name, entry.Name)];
-                    string value = GetWidgetValue(widget);
+                    var widget = _widgets[(section.Name, entry.Name)];
+                    var value = GetWidgetValue(widget);
 
                     var newLine = entry.InlineComment != null
                         ? $"{entry.Name}={value}\t\t\t; {entry.InlineComment}"
@@ -146,8 +159,8 @@ public partial class MainWindow : Window
 
                     if (entry.LineNumber.HasValue)
                     {
-                        var leadingSpace = originalLines[entry.LineNumber.Value].Length -
-                                         originalLines[entry.LineNumber.Value].TrimStart().Length;
+                        var leadingSpace = _originalLines[entry.LineNumber.Value].Length -
+                                         _originalLines[entry.LineNumber.Value].TrimStart().Length;
                         newLines[entry.LineNumber.Value] = new string(' ', leadingSpace) + newLine;
                     }
                     else
@@ -157,7 +170,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            File.WriteAllLines(currentFile, newLines);
+            File.WriteAllLines(_currentFile, newLines);
             MessageBox.Show(
                 "Settings saved successfully.",
                 "Save Complete",
@@ -174,7 +187,7 @@ public partial class MainWindow : Window
         }
         finally
         {
-            isSaving = false;
+            _isSaving = false;
         }
     }
 
@@ -236,12 +249,12 @@ public partial class MainWindow : Window
         return true;
     }
 
-    private void RefreshUI()
+    private void RefreshUi()
     {
-        widgets.Clear();
-        tabControl = new TabControl();
+        _widgets.Clear();
+        _tabControl = new TabControl();
 
-        foreach (var section in sections)
+        foreach (var section in _sections)
         {
             var scrollViewer = new ScrollViewer
             {
@@ -263,7 +276,7 @@ public partial class MainWindow : Window
                 tabItem.ToolTip = section.Tooltip;
             }
 
-            tabControl.Items.Add(tabItem);
+            _tabControl.Items.Add(tabItem);
         }
 
         ShowEditorContent();
@@ -312,7 +325,7 @@ public partial class MainWindow : Window
             grid.Children.Add(label);
             grid.Children.Add(widget);
 
-            widgets[(section.Name, entry.Name)] = widget;
+            _widgets[(section.Name, entry.Name)] = widget;
         }
 
         container.Children.Add(grid);
@@ -354,9 +367,13 @@ public partial class MainWindow : Window
                 var item = comboBox.Items.Cast<ComboBoxItem>()
                     .FirstOrDefault(item => (int)item.Tag == charsetValue);
                 if (item != null)
+                {
                     comboBox.SelectedItem = item;
+                }
                 else
+                {
                     comboBox.SelectedIndex = 1; // Default to DEFAULT_CHARSET (1)
+                }
             }
             else
             {

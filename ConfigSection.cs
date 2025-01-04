@@ -1,25 +1,21 @@
 ﻿namespace CKPEConfig;
 
-public class ConfigSection
+public class ConfigSection(string name, string? tooltip = null, int? lineNumber = null)
 {
     public string Name
     {
         get;
-    }
+    } = name;
+
     public string? Tooltip
     {
         get;
-    }
+    } = tooltip;
+
     public int? LineNumber
     {
         get;
-    }
-    public List<ConfigEntry> Entries { get; } = new();
+    } = lineNumber;
 
-    public ConfigSection(string name, string? tooltip = null, int? lineNumber = null)
-    {
-        Name = name;
-        Tooltip = tooltip;
-        LineNumber = lineNumber;
-    }
+    public List<ConfigEntry> Entries { get; } = [];
 }

@@ -13,7 +13,9 @@ public static class ConfigParser
         {
             var line = lines[i].Trim();
             if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
+            {
                 continue;
+            }
 
             if (line.StartsWith("[") && line.EndsWith("]"))
             {
@@ -47,8 +49,10 @@ public static class ConfigParser
                     }
                 }
 
-                var entry = new ConfigEntry(name, value, tooltip, i);
-                entry.InlineComment = inlineComment;
+                var entry = new ConfigEntry(name, value, tooltip, i)
+                {
+                    InlineComment = inlineComment
+                };
                 currentSection.Entries.Add(entry);
             }
         }
