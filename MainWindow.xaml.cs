@@ -409,6 +409,16 @@ public partial class MainWindow
 
         if (int.TryParse(value, out var numericValue))
         {
+            if (entryName == "bUIDarkThemeID" || entryName == "nGenerationVersion")
+            {
+                return new NumericUpDownControl
+                {
+                    Value = numericValue,
+                    Minimum = 0,
+                    Maximum = 2,
+                    Step = 1
+                };
+            }
             return new NumericUpDownControl
             {
                 Value = numericValue,
