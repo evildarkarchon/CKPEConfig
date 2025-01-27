@@ -1,19 +1,10 @@
 ﻿namespace CKPEConfig.Models;
 
-public class ConfigEntry
+public class ConfigEntry(string name, string value, string tooltip = "", int? lineNumber = null)
 {
-    public string Name { get; set; }
-    public string Value { get; set; }
-    public string Tooltip { get; set; }
-    public int? LineNumber { get; set; }
-    public string InlineComment { get; set; }
-
-    public ConfigEntry(string name, string value, string tooltip = "", int? lineNumber = null)
-    {
-        Name = name;
-        Value = value;
-        Tooltip = tooltip;
-        LineNumber = lineNumber;
-        InlineComment = string.Empty;
-    }
+    public string Name { get; set; } = name;
+    public string Value { get; set; } = value;
+    public string Tooltip { get; set; } = tooltip;
+    public int? LineNumber { get; set; } = lineNumber;
+    public string InlineComment { get; init; } = string.Empty;
 }

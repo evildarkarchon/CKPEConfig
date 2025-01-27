@@ -7,6 +7,20 @@ namespace CKPEConfig.Services;
 
 public static class MessageDialog
 {
+    /// Displays a message dialog with a specified title and message.
+    /// <param name="parent">
+    /// The top-level window that will act as the owner of the dialog.
+    /// Should be of type `Window`.
+    /// </param>
+    /// <param name="title">
+    /// The title text displayed on the dialog window.
+    /// </param>
+    /// <param name="message">
+    /// The message text displayed inside the dialog.
+    /// </param>
+    /// <returns>
+    /// A `Task` representing the asynchronous operation of showing the dialog.
+    /// </returns>
     public static async Task ShowAsync(TopLevel parent, string title, string message)
     {
         if (parent is not Window parentWindow)

@@ -4,18 +4,10 @@ using System.Collections.Generic;
 
 namespace CKPEConfig.Models;
 
-public class ConfigSection
+public class ConfigSection(string name, string tooltip = "", int? lineNumber = null)
 {
-    public string Name { get; set; }
-    public string Tooltip { get; set; }
-    public int? LineNumber { get; set; }
-    public List<ConfigEntry> Entries { get; set; }
-
-    public ConfigSection(string name, string tooltip = "", int? lineNumber = null)
-    {
-        Name = name;
-        Tooltip = tooltip;
-        LineNumber = lineNumber;
-        Entries = new List<ConfigEntry>();
-    }
+    public string Name { get; set; } = name;
+    public string Tooltip { get; set; } = tooltip;
+    public int? LineNumber { get; set; } = lineNumber;
+    public List<ConfigEntry> Entries { get; set; } = new();
 }

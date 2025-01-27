@@ -5,13 +5,11 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using CKPEConfig.Models;
 using CKPEConfig.Services;
 using System.IO;
 using System.Diagnostics;
 using System.Linq;
 using Avalonia.Threading;
-using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace CKPEConfig.ViewModels;
@@ -21,7 +19,7 @@ public class MainWindowViewModel : ReactiveObject
     private readonly IConfigService _configService;
     private bool _isEditorVisible;
     private string? _currentFile;
-    private List<string> _originalLines = new();
+    private List<string> _originalLines = [];
     
     public ObservableCollection<ConfigSectionViewModel> Sections { get; }
     public ReactiveCommand<Unit, Unit> LoadIniCommand { get; }
@@ -33,10 +31,15 @@ public class MainWindowViewModel : ReactiveObject
         private set => this.RaiseAndSetIfChanged(ref _isEditorVisible, value);
     }
 
+    /// <summary>
+    /// Represents the primary view model for the main window of the application.
+    /// Manages the loading, displaying, and saving of INI file configurations,
+    /// including user interactivity through commands and visibility control for the editor.
+    /// </summary>
     public MainWindowViewModel()
     {
         _configService = new ConfigService();
-        Sections = new ObservableCollection<ConfigSectionViewModel>();
+        Sections = [];
 
         LoadIniCommand = ReactiveCommand.CreateFromTask(LoadIniAsync);
         SaveIniCommand = ReactiveCommand.CreateFromTask(SaveIniAsync);
@@ -48,6 +51,11 @@ public class MainWindowViewModel : ReactiveObject
             Debug.WriteLine($"Save command error: {error}"));
     }
 
+    /// <summary>
+    /// Loads the contents of an INI file into the configuration editor.
+    /// Prompts the user to select a file through an open file dialog and parses the file's sections and comments.
+    /// </summary>
+    /// <returns>Returns a task that completes when the file is loaded and the configuration editor is updated.</returns>
     private async Task LoadIniAsync()
     {
         try
@@ -61,10 +69,10 @@ public class MainWindowViewModel : ReactiveObject
             {
                 Title = "Open INI file",
                 AllowMultiple = false,
-                FileTypeFilter = new[] 
-                { 
-                    new FilePickerFileType("INI Files") { Patterns = new[] { "*.ini" } }
-                }
+                FileTypeFilter =
+                [
+                    new FilePickerFileType("INI Files") { Patterns = ["*.ini"] }
+                ]
             };
 
             // Show the file picker
@@ -96,6 +104,11 @@ public class MainWindowViewModel : ReactiveObject
         }
     }
 
+    /// <summary>
+    /// Saves the current contents of the configuration editor to an INI file.
+    /// If no file has been specified, prompts the user to select a file through a save dialog.
+    /// </summary>
+    /// <returns>Returns a task that completes when the save operation is finished.</returns>
     private async Task SaveIniAsync()
     {
         try
@@ -110,10 +123,10 @@ public class MainWindowViewModel : ReactiveObject
                     Title = "Save INI file",
                     DefaultExtension = "ini",
                     SuggestedFileName = "CreationKitPlatformExtended.ini",
-                    FileTypeChoices = new[] 
-                    { 
-                        new FilePickerFileType("INI Files") { Patterns = new[] { "*.ini" } }
-                    }
+                    FileTypeChoices =
+                    [
+                        new FilePickerFileType("INI Files") { Patterns = ["*.ini"] }
+                    ]
                 };
 
                 var file = await parentWindow.StorageProvider.SaveFilePickerAsync(options);
@@ -143,23 +156,26 @@ public class MainWindowViewModel : ReactiveObject
         }
     }
 
+    /// <summary>
+    /// Verifies if the given filename matches the expected filename required for the operation.
+    /// </summary>
+    /// <param name="filepath">The full path of the file to verify.</param>
+    /// <param name="operation">The operation being performed, such as "load" or "save", to include in the validation message.</param>
+    /// <returns>Returns a task that resolves to <c>true</c> if the filename matches the expected name; otherwise, <c>false</c>.</returns>
     private async Task<bool> VerifyFilename(string filepath, string operation)
     {
         const string expectedName = "CreationKitPlatformExtended.ini";
         var actualName = Path.GetFileName(filepath);
 
-        if (actualName != expectedName)
+        if (actualName == expectedName) return true;
+        var parentWindow = TopLevel.GetTopLevel(App.MainWindow);
+        if (parentWindow != null)
         {
-            var parentWindow = TopLevel.GetTopLevel(App.MainWindow);
-            if (parentWindow != null)
-            {
-                await MessageDialog.ShowAsync(
-                    parentWindow,
-                    "Invalid Filename",
-                    $"The {operation} filename must be '{expectedName}'\nSelected file: '{actualName}'");
-            }
-            return false;
+            await MessageDialog.ShowAsync(
+                parentWindow,
+                "Invalid Filename",
+                $"The {operation} filename must be '{expectedName}'\nSelected file: '{actualName}'");
         }
-        return true;
+        return false;
     }
 }

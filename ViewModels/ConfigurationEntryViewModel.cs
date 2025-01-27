@@ -50,6 +50,7 @@ public class ConfigEntryViewModel : ReactiveObject
     }
 
     public bool IsBoolean => bool.TryParse(_entry.Value.ToLower(), out _);
+    // ReSharper disable once MemberCanBePrivate.Global
     public bool IsInteger => int.TryParse(_entry.Value, out _);
     public bool IsNormalInteger => IsInteger && !IsCharset && !IsTheme;
     public bool IsCharset => Name == "nCharset";
@@ -63,54 +64,64 @@ public class ConfigEntryViewModel : ReactiveObject
     public ObservableCollection<CharsetInfo> Charsets { get; }
     public ObservableCollection<ThemeInfo> Themes { get; }
 
+    /// Represents the view model for a configuration entry.
+    /// This class provides reactive functionality for handling
+    /// and interacting with individual configuration entries,
+    /// including related metadata and behavior.
     public ConfigEntryViewModel(ConfigEntry entry, ConfigSection section)
     {
         _entry = entry;
         _section = section;
         _value = entry.Value;
 
-        Charsets = new ObservableCollection<CharsetInfo>
-        {
-            new("ANSI_CHARSET", 0),
-            new("DEFAULT_CHARSET", 1),
-            new("SYMBOL_CHARSET", 2),
-            new("SHIFTJIS_CHARSET", 128),
-            new("HANGEUL_CHARSET", 129),
-            new("GB2312_CHARSET", 134),
-            new("CHINESEBIG5_CHARSET", 136),
-            new("OEM_CHARSET", 255),
-            new("JOHAB_CHARSET", 130),
-            new("HEBREW_CHARSET", 177),
-            new("ARABIC_CHARSET", 178),
-            new("GREEK_CHARSET", 161),
-            new("TURKISH_CHARSET", 162),
-            new("VIETNAMESE_CHARSET", 163),
-            new("THAI_CHARSET", 222),
-            new("EASTEUROPE_CHARSET", 238),
-            new("RUSSIAN_CHARSET", 204),
-            new("MAC_CHARSET", 77),
-            new("BALTIC_CHARSET", 186)
-        };
+        Charsets =
+        [
+            new CharsetInfo("ANSI_CHARSET", 0),
+            new CharsetInfo("DEFAULT_CHARSET", 1),
+            new CharsetInfo("SYMBOL_CHARSET", 2),
+            new CharsetInfo("SHIFTJIS_CHARSET", 128),
+            new CharsetInfo("HANGEUL_CHARSET", 129),
+            new CharsetInfo("GB2312_CHARSET", 134),
+            new CharsetInfo("CHINESEBIG5_CHARSET", 136),
+            new CharsetInfo("OEM_CHARSET", 255),
+            new CharsetInfo("JOHAB_CHARSET", 130),
+            new CharsetInfo("HEBREW_CHARSET", 177),
+            new CharsetInfo("ARABIC_CHARSET", 178),
+            new CharsetInfo("GREEK_CHARSET", 161),
+            new CharsetInfo("TURKISH_CHARSET", 162),
+            new CharsetInfo("VIETNAMESE_CHARSET", 163),
+            new CharsetInfo("THAI_CHARSET", 222),
+            new CharsetInfo("EASTEUROPE_CHARSET", 238),
+            new CharsetInfo("RUSSIAN_CHARSET", 204),
+            new CharsetInfo("MAC_CHARSET", 77),
+            new CharsetInfo("BALTIC_CHARSET", 186)
+        ];
 
-        Themes = new ObservableCollection<ThemeInfo>
-        {
-            new("Lighter", 0),
-            new("Darker", 1),
-            new("Custom", 2)
-        };
+        Themes =
+        [
+            new ThemeInfo("Lighter", 0),
+            new ThemeInfo("Darker", 1),
+            new ThemeInfo("Custom", 2)
+        ];
 
         // Set initial selected items
-        if (IsCharset && int.TryParse(_value, out int charsetValue))
+        if (IsCharset && int.TryParse(_value, out var charsetValue))
         {
             _selectedCharset = Charsets.FirstOrDefault(c => c.Value == charsetValue);
         }
 
-        if (IsTheme && int.TryParse(_value, out int themeValue))
+        if (IsTheme && int.TryParse(_value, out var themeValue))
         {
             _selectedTheme = Themes.FirstOrDefault(t => t.Value == themeValue);
         }
     }
 
+    /// Converts the current view model instance into a corresponding
+    /// ConfigEntry model instance.
+    /// This method extracts the current state of the view model and
+    /// encapsulates it into a ConfigEntry object, preserving its
+    /// relevant properties and metadata like name, value, tooltip,
+    /// line number, and inline comments.
     public ConfigEntry ToModel()
     {
         return new ConfigEntry(_entry.Name, Value, _entry.Tooltip, _entry.LineNumber)
