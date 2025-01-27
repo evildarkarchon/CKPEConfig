@@ -3,6 +3,8 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="App.axaml" value="CKPEConfig.csproj" />
+        <entry key="MainWindow.axaml" value="CKPEConfig.csproj" />
         <entry key="Views/MainWindow.axaml" value="CKPEConfig.csproj" />
       </map>
     </option>
