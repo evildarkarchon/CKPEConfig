@@ -33,14 +33,14 @@ public static class MessageDialog
         {
             Margin = new Avalonia.Thickness(20)
         };
-        
+
         var messageText = new TextBlock
         {
             Text = message,
             TextWrapping = Avalonia.Media.TextWrapping.Wrap,
             Margin = new Avalonia.Thickness(0, 0, 0, 20)
         };
-        
+
         var okButton = new Button
         {
             Content = "OK",

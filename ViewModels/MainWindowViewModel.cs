@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using Avalonia.Threading;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace CKPEConfig.ViewModels;
 
@@ -20,11 +21,11 @@ public class MainWindowViewModel : ReactiveObject
     private bool _isEditorVisible;
     private string? _currentFile;
     private List<string> _originalLines = [];
-    
+
     public ObservableCollection<ConfigSectionViewModel> Sections { get; }
     public ReactiveCommand<Unit, Unit> LoadIniCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveIniCommand { get; }
-    
+
     public bool IsEditorVisible
     {
         get => _isEditorVisible;
@@ -45,26 +46,28 @@ public class MainWindowViewModel : ReactiveObject
         SaveIniCommand = ReactiveCommand.CreateFromTask(SaveIniAsync);
 
         // Handle command errors
-        LoadIniCommand.ThrownExceptions.Subscribe(error => 
-            Debug.WriteLine($"Load command error: {error}"));
-        SaveIniCommand.ThrownExceptions.Subscribe(error => 
-            Debug.WriteLine($"Save command error: {error}"));
+        LoadIniCommand.ThrownExceptions.Subscribe(error =>
+            Log.Warning($"Load command error: {error}"));
+        SaveIniCommand.ThrownExceptions.Subscribe(error =>
+            Log.Warning($"Save command error: {error}"));
     }
 
+    public event Action? RequestAdjustWindowWidth;
+
     /// <summary>
-    /// Loads the contents of an INI file into the configuration editor.
-    /// Prompts the user to select a file through an open file dialog and parses the file's sections and comments.
+    /// Loads an INI file asynchronously, parses its contents, and updates the application's state.
+    /// Handles file selection, validation, and UI updates, including populating sections
+    /// and managing the visibility of the editor.
     /// </summary>
-    /// <returns>Returns a task that completes when the file is loaded and the configuration editor is updated.</returns>
+    /// <returns>A task that represents the asynchronous operation of loading and parsing the INI file.</returns>
     private async Task LoadIniAsync()
     {
         try
         {
-            // Get the top level window
+            // File picker logic remains unchanged
             var parentWindow = TopLevel.GetTopLevel(App.MainWindow);
             if (parentWindow == null) return;
 
-            // Create file picker options
             var options = new FilePickerOpenOptions
             {
                 Title = "Open INI file",
@@ -75,7 +78,6 @@ public class MainWindowViewModel : ReactiveObject
                 ]
             };
 
-            // Show the file picker
             var result = await parentWindow.StorageProvider.OpenFilePickerAsync(options);
             if (!result.Any()) return;
 
@@ -83,6 +85,7 @@ public class MainWindowViewModel : ReactiveObject
             if (!await VerifyFilename(file.Path.LocalPath, "load"))
                 return;
 
+            // Parse file
             var (sections, lines) = await _configService.ParseIniWithCommentsAsync(file.Path.LocalPath);
             _currentFile = file.Path.LocalPath;
             _originalLines = lines;
@@ -94,12 +97,16 @@ public class MainWindowViewModel : ReactiveObject
                 {
                     Sections.Add(new ConfigSectionViewModel(section));
                 }
+
                 IsEditorVisible = true;
+                // Signal that the window adjustment is needed
+                RequestAdjustWindowWidth?.Invoke();
+
             });
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Error in LoadIniAsync: {ex}");
+            Log.Information($"Error in LoadIniAsync: {ex}");
             throw;
         }
     }
@@ -138,7 +145,7 @@ public class MainWindowViewModel : ReactiveObject
                 _currentFile = file.Path.LocalPath;
             }
 
-            var sections = await Dispatcher.UIThread.InvokeAsync(() => 
+            var sections = await Dispatcher.UIThread.InvokeAsync(() =>
                 Sections.Select(vm => vm.ToModel()).ToList());
 
             await _configService.SaveIniAsync(_currentFile, sections, _originalLines);
@@ -176,6 +183,7 @@ public class MainWindowViewModel : ReactiveObject
                 "Invalid Filename",
                 $"The {operation} filename must be '{expectedName}'\nSelected file: '{actualName}'");
         }
+
         return false;
     }
 }

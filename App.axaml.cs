@@ -8,6 +8,7 @@ using CKPEConfig.ViewModels;
 using CKPEConfig.Views;
 using ReactiveUI;
 using System.Reactive.Concurrency;
+using Serilog;
 
 namespace CKPEConfig;
 
@@ -27,6 +28,13 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        
+        // Set up Serilog for logging
+        Log.Logger = new LoggerConfiguration().WriteTo.File("logs/main.txt").CreateLogger();
+        Log.Information("Serilog initialized!");
+           
+        Log.Information("Avalonia app initialized!");
+
 
         RxApp.MainThreadScheduler = AvaloniaScheduler.Instance;
         RxApp.TaskpoolScheduler = TaskPoolScheduler.Default;
@@ -48,7 +56,7 @@ public partial class App : Application
             {
                 DataContext = new MainWindowViewModel()
             };
-            
+
             desktop.MainWindow = mainWindow;
             MainWindow = mainWindow;
         }

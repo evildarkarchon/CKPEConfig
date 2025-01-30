@@ -1,4 +1,5 @@
 ﻿// ViewModels/ConfigEntryViewModel.cs
+
 using CKPEConfig.Models;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -13,10 +14,10 @@ public class ConfigEntryViewModel : ReactiveObject
     private string _value;
     private CharsetInfo? _selectedCharset;
     private ThemeInfo? _selectedTheme;
-    
+
     public string Name => _entry.Name;
     public string Tooltip => _entry.Tooltip;
-    
+
     public string Value
     {
         get => _value;
@@ -50,15 +51,17 @@ public class ConfigEntryViewModel : ReactiveObject
     }
 
     public bool IsBoolean => bool.TryParse(_entry.Value.ToLower(), out _);
+
     // ReSharper disable once MemberCanBePrivate.Global
     public bool IsInteger => int.TryParse(_entry.Value, out _);
     public bool IsNormalInteger => IsInteger && !IsCharset && !IsTheme;
     public bool IsCharset => Name == "nCharset";
     public bool IsTheme => Name == "uUIDarkThemeId";
-    public bool IsSpecialTextbox => Name == "uTintMaskResolution" || 
-                                   _section.Name == "Hotkeys" || 
-                                   _section.Name == "Log";
-                                   
+
+    public bool IsSpecialTextbox => Name == "uTintMaskResolution" ||
+                                    _section.Name == "Hotkeys" ||
+                                    _section.Name == "Log";
+
     public bool IsDefaultTextBox => !IsBoolean && !IsInteger && !IsCharset && !IsTheme;
 
     public ObservableCollection<CharsetInfo> Charsets { get; }

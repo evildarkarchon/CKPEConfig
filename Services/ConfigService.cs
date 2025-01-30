@@ -22,7 +22,7 @@ public class ConfigService : IConfigService
         var sections = new List<ConfigSection>();
         ConfigSection? currentSection = null;
 
-        for (int i = 0; i < lines.Length; i++)
+        for (var i = 0; i < lines.Length; i++)
         {
             var line = lines[i].Trim();
             if (string.IsNullOrEmpty(line) || line.StartsWith(";"))
@@ -49,7 +49,7 @@ public class ConfigService : IConfigService
                     var commentParts = value.Split([';'], 2);
                     value = commentParts[0].Trim();
                     inlineComment = commentParts[1].Trim();
-                    
+
                     if (!string.IsNullOrEmpty(tooltip))
                         tooltip += "\n" + inlineComment;
                     else
@@ -85,6 +85,7 @@ public class ConfigService : IConfigService
             {
                 comments.Insert(0, lines[idx].Trim().Substring(1).Trim());
             }
+
             idx--;
         }
 
@@ -105,11 +106,13 @@ public class ConfigService : IConfigService
 
         foreach (var entry in sections.SelectMany(section => section.Entries))
         {
-            var newLine = !string.IsNullOrEmpty(entry.InlineComment) ? $"{entry.Name}={entry.Value}\t\t\t; {entry.InlineComment}" : $"{entry.Name}={entry.Value}";
+            var newLine = !string.IsNullOrEmpty(entry.InlineComment)
+                ? $"{entry.Name}={entry.Value}\t\t\t; {entry.InlineComment}"
+                : $"{entry.Name}={entry.Value}";
 
             if (entry.LineNumber.HasValue)
             {
-                var leadingSpaces = originalLines[entry.LineNumber.Value].Length - 
+                var leadingSpaces = originalLines[entry.LineNumber.Value].Length -
                                     originalLines[entry.LineNumber.Value].TrimStart().Length;
                 newLines[entry.LineNumber.Value] = new string(' ', leadingSpaces) + newLine + "\n";
             }

@@ -2,12 +2,13 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
+
 namespace CKPEConfig.ViewModels;
 
 public class ConfigSectionViewModel : ReactiveObject
 {
     private readonly ConfigSection _section;
-    
+
     public string Name => _section.Name;
     public string Tooltip => _section.Tooltip;
     public ObservableCollection<ConfigEntryViewModel> Entries { get; }

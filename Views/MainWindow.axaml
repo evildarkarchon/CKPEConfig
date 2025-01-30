@@ -3,15 +3,15 @@
         xmlns:vm="using:CKPEConfig.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
         x:Class="CKPEConfig.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="CreationKit Platform Extended INI Editor"
         Icon="/Assets/avalonia-logo.ico"
-        MinWidth="800" MinHeight="600">
+        MinWidth="550" MinHeight="600">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
     <Grid RowDefinitions="*, Auto">
@@ -23,24 +23,25 @@
                         HorizontalAlignment="Center"
                         Spacing="10">
                 <TextBlock Text="Creation Kit Platform Extended"
-                         FontSize="24"
-                         FontWeight="Bold"
-                         HorizontalAlignment="Center"/>
+                           FontSize="24"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center" />
                 <TextBlock Text="INI Configuration Editor"
-                         FontSize="16"
-                         HorizontalAlignment="Center"/>
+                           FontSize="16"
+                           HorizontalAlignment="Center" />
                 <TextBlock Text="v0.1.0"
-                         FontSize="12"
-                         HorizontalAlignment="Center"/>
+                           FontSize="12"
+                           HorizontalAlignment="Center" />
             </StackPanel>
 
             <!-- Editor (shown when IsEditorVisible is true) -->
             <TabControl IsVisible="{Binding IsEditorVisible}"
-                       ItemsSource="{Binding Sections}">
+                        ItemsSource="{Binding Sections}"
+                        x:Name="MainTabControl">
                 <TabControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:ConfigSectionViewModel">
-                        <TextBlock Text="{Binding Name}" 
-                                 ToolTip.Tip="{Binding Tooltip}"/>
+                        <TextBlock Text="{Binding Name}"
+                                   ToolTip.Tip="{Binding Tooltip}" />
                     </DataTemplate>
                 </TabControl.ItemTemplate>
                 <TabControl.ContentTemplate>
@@ -49,52 +50,52 @@
                             <ItemsControl ItemsSource="{Binding Entries}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:ConfigEntryViewModel">
-                                        <Grid ColumnDefinitions="Auto,*" 
+                                        <Grid ColumnDefinitions="Auto,*"
                                               Margin="5">
                                             <TextBlock Grid.Column="0"
-                                                     Text="{Binding Name}"
-                                                     VerticalAlignment="Center"
-                                                     Margin="5,0,10,0"
-                                                     ToolTip.Tip="{Binding Tooltip}"/>
+                                                       Text="{Binding Name}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="5,0,10,0"
+                                                       ToolTip.Tip="{Binding Tooltip}" />
 
                                             <!-- Value control based on type -->
                                             <ContentControl Grid.Column="1">
                                                 <Panel>
                                                     <!-- Boolean -->
                                                     <CheckBox IsVisible="{Binding IsBoolean}"
-                                                             IsChecked="{Binding Value}"/>
-                                                    
+                                                              IsChecked="{Binding Value}" />
+
                                                     <!-- Integer (only shown if not a special combo box) -->
                                                     <NumericUpDown IsVisible="{Binding IsNormalInteger}"
-                                                                  Value="{Binding Value}"
-                                                                  Minimum="0"
-                                                                  Maximum="999999"/>
-                                                    
+                                                                   Value="{Binding Value}"
+                                                                   Minimum="0"
+                                                                   Maximum="999999" />
+
                                                     <!-- Character Set Combo -->
                                                     <ComboBox IsVisible="{Binding IsCharset}"
-                                                             ItemsSource="{Binding Charsets}"
-                                                             SelectedItem="{Binding SelectedCharset}">
+                                                              ItemsSource="{Binding Charsets}"
+                                                              SelectedItem="{Binding SelectedCharset}">
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding Name}"/>
+                                                                <TextBlock Text="{Binding Name}" />
                                                             </DataTemplate>
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
-                                                    
+
                                                     <!-- Theme Combo -->
                                                     <ComboBox IsVisible="{Binding IsTheme}"
-                                                             ItemsSource="{Binding Themes}"
-                                                             SelectedItem="{Binding SelectedTheme}">
+                                                              ItemsSource="{Binding Themes}"
+                                                              SelectedItem="{Binding SelectedTheme}">
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding Name}"/>
+                                                                <TextBlock Text="{Binding Name}" />
                                                             </DataTemplate>
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
-                                                    
+
                                                     <!-- Default TextBox -->
                                                     <TextBox IsVisible="{Binding IsDefaultTextBox}"
-                                                            Text="{Binding Value}"/>
+                                                             Text="{Binding Value}" />
                                                 </Panel>
                                             </ContentControl>
                                         </Grid>
@@ -108,15 +109,15 @@
         </Panel>
 
         <!-- Button Panel -->
-        <StackPanel Grid.Row="1" 
+        <StackPanel Grid.Row="1"
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="10"
                     Spacing="5">
             <Button Content="Load INI"
-                    Command="{Binding LoadIniCommand}"/>
+                    Command="{Binding LoadIniCommand}" />
             <Button Content="Save INI"
-                    Command="{Binding SaveIniCommand}"/>
+                    Command="{Binding SaveIniCommand}" />
         </StackPanel>
     </Grid>
 </Window>
